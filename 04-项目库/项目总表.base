@@ -1,0 +1,60 @@
+filters:
+  and:
+    - file.inFolder("04-项目库")
+    - note_type == "project"
+formulas:
+  last_updated: file.mtime.format("YYYY-MM-DD")
+  agent_state: if(agent_ready == "是", "可直接给 Agent 读", "还要补上下文")
+properties:
+  status:
+    displayName: 状态
+  stage:
+    displayName: 阶段
+  primary_stack:
+    displayName: 技术栈
+  repo_path:
+    displayName: 仓库路径
+  doc_status:
+    displayName: 文档状态
+  agent_ready:
+    displayName: Agent 可读
+  formula.last_updated:
+    displayName: 最近更新
+  formula.agent_state:
+    displayName: Agent 状态
+views:
+  - type: table
+    name: 全部项目
+    order:
+      - file.name
+      - status
+      - stage
+      - primary_stack
+      - doc_status
+      - formula.agent_state
+      - formula.last_updated
+  - type: table
+    name: 进行中
+    filters:
+      and:
+        - status != "归档"
+        - status != "暂停"
+    order:
+      - file.name
+      - status
+      - stage
+      - primary_stack
+      - doc_status
+      - formula.last_updated
+  - type: table
+    name: 待补文档
+    filters:
+      or:
+        - doc_status != "完整"
+        - agent_ready != "是"
+    order:
+      - file.name
+      - doc_status
+      - agent_ready
+      - repo_path
+      - formula.last_updated
